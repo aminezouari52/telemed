@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const { Doctor, Consultation } = require("../models");
 const ApiError = require("../utils/ApiError");
+const assertValidObjectId = require("../utils/assertValidObjectId");
 const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
 
@@ -21,7 +22,10 @@ const query = async function (Schema, filter, options) {
     options.sortBy.split(",").forEach((sortOption) => {
       const [key, order] = sortOption.split(":");
       if (!ALLOWED_SORT_FIELDS.has(key)) {
-        throw new ApiError(httpStatus.BAD_REQUEST, `Invalid sort field: ${key}`);
+        throw new ApiError(
+          httpStatus.BAD_REQUEST,
+          `Invalid sort field: ${key}`,
+        );
       }
       sortingCriteria.push((order === "desc" ? "-" : "") + key);
     });
@@ -81,7 +85,8 @@ const getAllDoctors = async (filter, options) => {
 };
 
 const getDoctor = async (id) => {
-  const doctor = Doctor.findById(id).exec();
+  assertValidObjectId(id, "doctor");
+  const doctor = await Doctor.findById(id).exec();
   if (!doctor) {
     throw new ApiError(httpStatus.NOT_FOUND, "Doctor not found");
   }
@@ -109,6 +114,7 @@ const uploadProfilePicture = async (image) => {
 };
 
 const getDoctorPatientsCount = async (id) => {
+  assertValidObjectId(id, "doctor");
   const match = {
     $match: {
       doctor: new mongoose.Types.ObjectId(id),
