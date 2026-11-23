@@ -68,11 +68,7 @@ if (config.env === "production") {
 // v1 api routes
 app.use("/v1", routes);
 
-app.use(function (req, res) {
-  res.send({ test: "hello world!" });
-});
-
-// error handling
+// error handling: anything no route matched is a 404
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
 });

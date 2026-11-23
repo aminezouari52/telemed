@@ -1,14 +1,8 @@
-const mongoose = require("mongoose");
 const { Consultation, Doctor } = require("../models");
 const ApiError = require("../utils/ApiError");
+const assertValidObjectId = require("../utils/assertValidObjectId");
 const httpStatus = require("http-status");
 const config = require("../config/config");
-
-const assertValidObjectId = (id, field) => {
-  if (!mongoose.isValidObjectId(id)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, `Invalid ${field} id`);
-  }
-};
 
 const assertParticipant = (consultation, user) => {
   const isParticipant = [consultation.doctor, consultation.patient].some((id) =>
